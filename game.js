@@ -1,6 +1,8 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+const BLOCK_SIZE = 30;
+
 let index = 0;  //with this index i will go through every shape in SHAPES ans COLORS
 
 const SHAPES = [
@@ -51,32 +53,38 @@ function drawBlock(block) {
                 ctx.fillStyle = block.color;
                 ctx.strokeStyle = '#000';
                 ctx.fillRect(
-                    (block.x + colIndex) * 30,
-                    (block.y + rowIndex) * 30,
-                    30,
-                    30
+                    (block.x + colIndex) * BLOCK_SIZE,
+                    (block.y + rowIndex) * BLOCK_SIZE,
+                    BLOCK_SIZE,
+                    BLOCK_SIZE
                 );
                 ctx.strokeRect(
-                    (block.x + colIndex) * 30,
-                    (block.y + rowIndex) * 30,
-                    30,
-                    30
+                    (block.x + colIndex) * BLOCK_SIZE,
+                    (block.y + rowIndex) * BLOCK_SIZE,
+                    BLOCK_SIZE,
+                    BLOCK_SIZE
                 )
             }
         });
     });
 }
 
+function randomIndex(arrayLength) {
+    const randomArray = new Uint32Array(1); // Create a 32-bit array
+    window.crypto.getRandomValues(randomArray); // Fill with cryptographically secure random numbers
+    return randomArray[0] % arrayLength; // Use modulo to ensure it's within bounds
+}
+
 function gameLoop(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
     drawGrid();
     drawBlock(currentBlock);
-    index = (index+1) % 7;
+    index = randomIndex(SHAPES.length);
     currentBlock.shape = SHAPES[index];
     currentBlock.color = COLORS[index];
 
     setTimeout(() => {
-        requestAnimationFrame(gameLoop); // Call the next frame after a delay for now i will ofcourse change this later
+        requestAnimationFrame(gameLoop); // Call the next frame after a delay for now. i will ofcourse change this later
     }, 1000); // Wait 1 second before the next frame
 }
 
