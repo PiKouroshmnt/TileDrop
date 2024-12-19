@@ -1,3 +1,21 @@
+document.addEventListener('keydown', (event) => {
+    if(event.key === 'ArrowLeft'){
+        moveBlock(-1);
+    }else if(event.key === 'ArrowRight') {
+        moveBlock(1);
+    }else if(event.key === 'ArrowUp') {
+        rotateBlock();
+    }else if(event.key === 'ArrowDown' && event.repeat){
+        speedFall();
+    }
+});
+
+document.addEventListener('keyup', (event) =>{
+    if(event.key === 'ArrowDown'){
+        normalFall();
+    }
+});
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -36,6 +54,9 @@ const BLOCK_SIZE = 30;
 const GAME_WIDTH = canvas.width / BLOCK_SIZE;
 const GAME_HEIGHT = canvas.height / BLOCK_SIZE;
 
+let lastDropTime = 0;
+let drop_delay = 1000;
+
 function drawGrid() {
     for(let x = 0;x < canvas.width;x += 30){
         for(let y = 0;y < canvas.height;y += 30){
@@ -69,6 +90,15 @@ function drawBlock(block) {
     });
 }
 
+function moveBlock(direction) {
+    currentBlock.x += direction;
+    //add collision detection here late
+}
+
+function rotateBlock() {
+    // i cant bother with this right now :/
+}
+
 function randomIndex(arrayLength) {
     const randomArray = new Uint32Array(1); // Create a 32-bit array
     window.crypto.getRandomValues(randomArray); // Fill with cryptographically secure random numbers
@@ -85,6 +115,14 @@ function newBlock(){
     }
 }
 
+function speedFall(){
+    drop_delay = 15;
+}
+
+function normalFall(){
+    drop_delay = 1000;
+}
+
 function gravity(block) {
     let height = block.shape.length;
     block.y++;
@@ -94,14 +132,15 @@ function gravity(block) {
     }
 }
 
-function gameLoop(){
+function gameLoop(currenTime){
     ctx.clearRect(0,0,canvas.width,canvas.height);
     drawGrid();
     drawBlock(currentBlock);
-    gravity(currentBlock);
-    setTimeout(() => {
-        requestAnimationFrame(gameLoop); // Call the next frame after a delay for now. i will ofcourse change this later
-    }, 1000); // Wait 1 second before the next frame
+    if(currenTime - lastDropTime > drop_delay){
+       gravity(currentBlock);
+       lastDropTime = currenTime;
+    }
+    requestAnimationFrame(gameLoop);
 }
 
 gameLoop();
