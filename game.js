@@ -1,10 +1,6 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-const BLOCK_SIZE = 30;
-
-let index = 0;  //with this index i will go through every shape in SHAPES ans COLORS
-
 const SHAPES = [
     [[0,1],[1,1],[0,1]],   // T shape
     [[1,1],[1,1]],         // square shape
@@ -35,6 +31,10 @@ let currentBlock = {
 
 canvas.width = 300;
 canvas.height = 600;
+
+const BLOCK_SIZE = 30;
+const GAME_WIDTH = canvas.width / BLOCK_SIZE;
+const GAME_HEIGHT = canvas.height / BLOCK_SIZE;
 
 function drawGrid() {
     for(let x = 0;x < canvas.width;x += 30){
@@ -75,14 +75,30 @@ function randomIndex(arrayLength) {
     return randomArray[0] % arrayLength; // Use modulo to ensure it's within bounds
 }
 
+function newBlock(){
+    let index = randomIndex(SHAPES.length);
+    currentBlock = {
+        shape: SHAPES[index],
+        x : (GAME_WIDTH / 2) - 1,
+        y : 0,
+        color: COLORS[index],
+    }
+}
+
+function gravity(block) {
+    let height = block.shape.length;
+    block.y++;
+    if (block.y + height > GAME_HEIGHT){
+        block.y = GAME_HEIGHT - 1;
+        newBlock();
+    }
+}
+
 function gameLoop(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
     drawGrid();
     drawBlock(currentBlock);
-    index = randomIndex(SHAPES.length);
-    currentBlock.shape = SHAPES[index];
-    currentBlock.color = COLORS[index];
-
+    gravity(currentBlock);
     setTimeout(() => {
         requestAnimationFrame(gameLoop); // Call the next frame after a delay for now. i will ofcourse change this later
     }, 1000); // Wait 1 second before the next frame
