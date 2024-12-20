@@ -1,7 +1,7 @@
 document.addEventListener('keydown', (event) => {
-    if(event.key === 'ArrowLeft'){
+    if(event.key === 'ArrowLeft' && currentBlock.x !== 0){
         moveBlock(-1);
-    }else if(event.key === 'ArrowRight') {
+    }else if(event.key === 'ArrowRight' && currentBlock.x + currentBlock.shape[0].length !== GAME_WIDTH) {
         moveBlock(1);
     }else if(event.key === 'ArrowUp') {
         rotateBlock();
@@ -39,14 +39,6 @@ const COLORS = [
     '#21832f',
 ];
 
-// the current block we want to draw
-let currentBlock = {
-    shape: SHAPES[0],
-    x: 4,
-    y: 0,
-    color: COLORS[0],
-}
-
 canvas.width = 300;
 canvas.height = 600;
 
@@ -54,14 +46,40 @@ const BLOCK_SIZE = 30;
 const GAME_WIDTH = canvas.width / BLOCK_SIZE;
 const GAME_HEIGHT = canvas.height / BLOCK_SIZE;
 
+let grid = Array.from({length: GAME_HEIGHT}, () =>
+    Array.from(({length: GAME_WIDTH}),() =>({
+        isOccupied : 0,
+        color : null,
+    }))
+);
+
+console.log(grid);
+
+let firstIndex = randomIndex(SHAPES.length);
+
+// the current block we want to draw
+let currentBlock = {
+    shape: SHAPES[firstIndex],
+    x: (GAME_WIDTH / 2) - 1,
+    y: 0,
+    color: COLORS[firstIndex],
+}
+
 let lastDropTime = 0;
 let drop_delay = 1000;
 
 function drawGrid() {
-    for(let x = 0;x < canvas.width;x += 30){
-        for(let y = 0;y < canvas.height;y += 30){
-            ctx.strokeStyle = '#d3d3d3';
-            ctx.strokeRect(x,y,30,30);
+    for(let y = 0;y < GAME_HEIGHT;y++){
+        for(let x = 0;x < GAME_WIDTH;x++){
+            if(grid[y][x].isOccupied === 1) {
+                ctx.strokeStyle = '#000';
+                ctx.fillStyle = grid[y][x].color;
+                ctx.fillRect(x * BLOCK_SIZE,y * BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE);
+                ctx.strokeRect(x * BLOCK_SIZE,y * BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE);
+            } else {
+                ctx.strokeStyle = '#d3d3d3';
+                ctx.strokeRect(x * BLOCK_SIZE,y * BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE);
+            }
         }
     }
 }
@@ -91,6 +109,7 @@ function drawBlock(block) {
 }
 
 function moveBlock(direction) {
+    let width = currentBlock.shape[0].length;
     currentBlock.x += direction;
     //add collision detection here late
 }
@@ -106,6 +125,7 @@ function randomIndex(arrayLength) {
 }
 
 function newBlock(){
+    previousBlock = currentBlock;
     let index = randomIndex(SHAPES.length);
     currentBlock = {
         shape: SHAPES[index],
@@ -123,11 +143,51 @@ function normalFall(){
     drop_delay = 1000;
 }
 
+function placeBlockOnGrid() {
+    currentBlock.shape.forEach((blockRow, rowIndex) => {
+        blockRow.forEach((cell, colIndex) => {
+            if (cell) {
+                const x = currentBlock.x + colIndex;
+                const y = currentBlock.y + rowIndex;
+
+                grid[y][x].isOccupied = 1;
+                grid[y][x].color = currentBlock.color;
+            }
+        });
+    });
+}
+
+function nextPosition(block,newY,newX) {
+    let nextBlock = {
+        shape: block.shape,
+        x: newX,
+        y: newY,
+        color: block.color,
+    }
+    let isnull = false;
+    nextBlock.shape.forEach((row,rowIndex) => {
+        row.forEach((cell,colIndex) => {
+            if(cell) {
+                const x = nextBlock.x + colIndex;
+                const y = nextBlock.y + rowIndex;
+
+                if(y >= GAME_HEIGHT || y < 0 || x >= GAME_WIDTH || x < 0 || grid[y][x].isOccupied === 1){
+                    isnull = true;
+                }
+            }
+        });
+    });
+    if(isnull)
+        return null;
+    return nextBlock;
+}
+
 function gravity(block) {
-    let height = block.shape.length;
-    block.y++;
-    if (block.y + height > GAME_HEIGHT){
-        block.y = GAME_HEIGHT - 1;
+    let next = nextPosition(block,block.y + 1,block.x);
+    if(next != null){
+        block.y++;
+    }else{
+        placeBlockOnGrid();
         newBlock();
     }
 }
