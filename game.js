@@ -1,7 +1,7 @@
 document.addEventListener('keydown', (event) => {
-    if(event.key === 'ArrowLeft' && currentBlock.x !== 0){
+    if(event.key === 'ArrowLeft'){
         moveBlock(-1);
-    }else if(event.key === 'ArrowRight' && currentBlock.x + currentBlock.shape[0].length !== GAME_WIDTH) {
+    }else if(event.key === 'ArrowRight') {
         moveBlock(1);
     }else if(event.key === 'ArrowUp') {
         rotateBlock();
@@ -110,12 +110,54 @@ function drawBlock(block) {
 
 function moveBlock(direction) {
     let width = currentBlock.shape[0].length;
-    currentBlock.x += direction;
-    //add collision detection here late
+    let next = nextPosition(currentBlock,currentBlock.y,currentBlock.x + direction);
+    if(next != null)
+        currentBlock = next;
 }
 
+function rotateMatrix(matrix) {
+    const rows = matrix.length;
+    const cols = matrix[0].length;
+    const rotated = Array.from({ length: cols }, () => Array(rows).fill(0));
+
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            rotated[col][rows - 1 - row] = matrix[row][col]; // Clockwise rotation
+        }
+    }
+
+    return rotated;
+}
+
+function isRotationValid(shape, x, y) {
+    for (let row = 0; row < shape.length; row++) {
+        for (let col = 0; col < shape[row].length; col++) {
+            if (shape[row][col]) {
+                const newX = x + col;
+                const newY = y + row;
+
+                // Check bounds
+                if (newX < 0 || newX >= GAME_WIDTH || newY >= GAME_HEIGHT) {
+                    return false; // Out of bounds
+                }
+
+                // Check collision with existing blocks (e.g., on the grid)
+                if (grid[newY] && grid[newY][newX].isOccupied === 1) {
+                    return false; // Collision
+                }
+            }
+        }
+    }
+    return true;
+}
+
+
 function rotateBlock() {
-    // i cant bother with this right now :/
+    // the rotation center is not the same for each shape, i have to implement that as well...
+    let rotated = rotateMatrix(currentBlock.shape);
+    if(isRotationValid(rotated,currentBlock.x,currentBlock.y)){
+        currentBlock.shape = rotated;
+    }
 }
 
 function randomIndex(arrayLength) {
