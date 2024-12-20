@@ -167,7 +167,6 @@ function randomIndex(arrayLength) {
 }
 
 function newBlock(){
-    previousBlock = currentBlock;
     let index = randomIndex(SHAPES.length);
     currentBlock = {
         shape: SHAPES[index],
@@ -224,6 +223,35 @@ function nextPosition(block,newY,newX) {
     return nextBlock;
 }
 
+function numFullLines(){
+    let fullLines = [];
+    let compare = Array(GAME_WIDTH).fill(1);
+    for (let y = 0;y < GAME_HEIGHT;y++){
+        let values = [];
+        for(let x = 0;x < GAME_WIDTH;x++){
+            values.push(grid[y][x].isOccupied);
+        }
+        if(JSON.stringify(values) === JSON.stringify(compare)){
+            fullLines.push(y);
+        }
+    }
+    return fullLines;
+}
+
+function clearFullLines(){
+    let lines = numFullLines();
+    for(let i = 0;i < lines.length;i++){
+        let index = lines[i];
+        let rowOut = grid.splice(index,1)[0];
+        rowOut.forEach((obj, colIndex) => {
+            obj.isOccupied = 0;
+            obj.color = null;
+        });
+        grid.reverse().push(rowOut);
+        grid.reverse();
+    }
+}
+
 function gravity(block) {
     let next = nextPosition(block,block.y + 1,block.x);
     if(next != null){
@@ -231,6 +259,7 @@ function gravity(block) {
     }else{
         placeBlockOnGrid();
         newBlock();
+        clearFullLines();
     }
 }
 
