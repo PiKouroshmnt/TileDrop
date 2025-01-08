@@ -10,6 +10,8 @@ document.addEventListener('keydown', (event) => {
     }else if(event.key === 'r' && isGameOver){
         init();
         gameLoop();
+    }else if(event.key === 'c'){
+        holdBlock();
     }
 });
 
@@ -24,6 +26,9 @@ const ctx = canvas.getContext('2d');
 
 const nxtCanvas = document.getElementById('nextCanvas');
 const nxtCtx = nxtCanvas.getContext('2d');
+
+const hldCanvas = document.getElementById('holdCanvas');
+const hldCtx = hldCanvas.getContext('2d');
 
 const SHAPES = [
     [[0,1],[1,1],[0,1]],   // T shape
@@ -55,6 +60,9 @@ const GAME_HEIGHT = canvas.height / BLOCK_SIZE;
 const NEXT_WIDTH = nxtCanvas.width / BLOCK_SIZE;
 const NEXT_HEIGHT = nxtCanvas.height / BLOCK_SIZE;
 
+const HOLD_WIDTH = hldCanvas.width / BLOCK_SIZE;
+const HOLD_HEIGHT = hldCanvas.height / BLOCK_SIZE;
+
 let isGameOver;
 let gameLoopId;
 
@@ -65,14 +73,18 @@ console.log(grid);
 // the current block we want to draw
 let currentBlock;
 
-
+// the block that will spawn next
 let nextBlock;
+
+// the block in holding... initially none
+let holdingBlock;
 
 let lastDropTime;
 let drop_delay;
 
 function init(){
     isGameOver = false;
+    holdingBlock = null;
     grid = Array.from({length: GAME_HEIGHT}, () =>
         Array.from(({length: GAME_WIDTH}),() =>({
             isOccupied : 0,
@@ -89,10 +101,13 @@ function init(){
         y: 0,
         color: COLORS[firstIndex],
     };
+    let nxtShape = SHAPES[secondIndex]
+    let shapeWidth = nxtShape[0].length
+    let shapeHeight = nxtShape.length
     nextBlock = {
-        shape: SHAPES[secondIndex],
-        x: (NEXT_WIDTH / 2) - 1,
-        y: (NEXT_HEIGHT / 2) - 1,
+        shape: nxtShape,
+        x: (NEXT_WIDTH - shapeWidth)/ 2 ,
+        y: (NEXT_HEIGHT - shapeHeight)/ 2,
         color: COLORS[secondIndex],
     }
     lastDropTime = 0;
@@ -111,15 +126,6 @@ function drawGrid() {
                 ctx.strokeStyle = '#d3d3d3';
                 ctx.strokeRect(x * BLOCK_SIZE,y * BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE);
             }
-        }
-    }
-}
-
-function drawNextGrid() {
-    for(let y = 0;y < NEXT_HEIGHT;y++) {
-        for(let x = 0;x < NEXT_WIDTH;x++){
-            nxtCtx.strokeStyle = "#d3d3d3";
-            nxtCtx.strokeRect(x * BLOCK_SIZE,y * BLOCK_SIZE,BLOCK_SIZE,BLOCK_SIZE);
         }
     }
 }
@@ -169,6 +175,31 @@ function drawNextBlock(){
             }
         });
     });
+}
+
+function drawHoldBlock(){
+    if(holdingBlock != null) {
+        holdingBlock.shape.forEach((row, rowIndex) => {
+            row.forEach((cell, colIndex) => {
+                if (cell) {
+                    hldCtx.strokeStyle = '#000';
+                    hldCtx.fillStyle = holdingBlock.color;
+                    hldCtx.fillRect(
+                        (holdingBlock.x + colIndex) * BLOCK_SIZE,
+                        (holdingBlock.y + rowIndex) * BLOCK_SIZE,
+                        BLOCK_SIZE,
+                        BLOCK_SIZE,
+                    );
+                    hldCtx.strokeRect(
+                        (holdingBlock.x + colIndex) * BLOCK_SIZE,
+                        (holdingBlock.y + rowIndex) * BLOCK_SIZE,
+                        BLOCK_SIZE,
+                        BLOCK_SIZE,
+                    );
+                }
+            });
+        });
+    }
 }
 
 function moveBlock(direction) {
@@ -234,10 +265,13 @@ function newBlock(){
     currentBlock = nextBlock;
     currentBlock.x = (GAME_WIDTH / 2) - 1;
     currentBlock.y = (-1 * currentBlock.shape.length) + 1;
+    let nxtShape = SHAPES[index]
+    let shapeWidth = nxtShape[0].length
+    let shapeHeight = nxtShape.length
     nextBlock = {
-        shape: SHAPES[index],
-        x: (NEXT_WIDTH / 2) - 1,
-        y: (NEXT_HEIGHT / 2) - 1,
+        shape: nxtShape,
+        x: (NEXT_WIDTH - shapeWidth)/ 2,
+        y: (NEXT_HEIGHT - shapeHeight)/ 2,
         color: COLORS[index],
     }
 }
@@ -255,6 +289,24 @@ function speedFall(){
 
 function normalFall(){
     drop_delay = 1000;
+}
+
+function holdBlock(){
+    hldCtx.clearRect(0,0,hldCanvas.width,hldCanvas.height);
+    if(holdingBlock == null){
+        holdingBlock = currentBlock;
+        spawnNewBlock();
+    }else{
+        let tempBlock = currentBlock;
+        currentBlock = holdingBlock;
+        holdingBlock = tempBlock;
+        currentBlock.x = tempBlock.x;
+        currentBlock.y = tempBlock.y;
+    }
+    let width = holdingBlock.shape[0].length;
+    let height = holdingBlock.shape.length;
+    holdingBlock.x = (HOLD_WIDTH - width) / 2;
+    holdingBlock.y = (HOLD_HEIGHT - height) / 2;
 }
 
 function placeBlockOnGrid() {
@@ -346,9 +398,9 @@ function gameLoop(currenTime){
     nxtCtx.clearRect(0,0,nxtCanvas.width,nxtCanvas.height);
     ctx.clearRect(0,0,canvas.width,canvas.height);
     drawGrid();
-    drawNextGrid();
     drawBlock(currentBlock);
     drawNextBlock();
+    drawHoldBlock();
     if(currenTime - lastDropTime > drop_delay){
        gravity(currentBlock);
        lastDropTime = currenTime;
@@ -360,19 +412,22 @@ function gameOver(){
     isGameOver = true;
 
     cancelAnimationFrame(gameLoopId);
-
+    
+    hldCtx.clearRect(0,0,hldCanvas.width,hldCanvas.height);
     nxtCtx.clearRect(0,0,nxtCanvas.width,nxtCanvas.height);
 
     ctx.fillStyle = "rgba(255,255,255,0.5)";
     nxtCtx.fillStyle = "rgba(255,255,255,0.5)";
-
+    hldCtx.fillStyle = "rgba(255,255,255,0.5)";
+    
     let offset = 50;
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = "rgba(0,0,0,0.6)";
     ctx.fillRect(0,(canvas.height / 2) - offset,canvas.width,2 * offset);
 
     nxtCtx.fillRect(0,0,nxtCanvas.width,nxtCanvas.height);
-
+    hldCtx.fillRect(0,0,hldCanvas.width,hldCanvas.height);
+    
     ctx.fillStyle = "rgb(255,0,0)";
     ctx.font = "30px Arial";
     ctx.textAlign = "center";
