@@ -10,3 +10,37 @@ canvas {
     background-color: white;
     border: 5px solid black;
 }
+
+.game-container {
+    text-align: center;
+}
+
+.game-canvas {
+    margin: 0 20px;
+}
+
+.game-title {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+.boxes {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.box {
+    margin: 0 30px;
+    width: 120px;
+    height: 120px;
+}
+
+.box-title {
+    text-align: center;
+    width: 120px;
+    font-size: 18px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
