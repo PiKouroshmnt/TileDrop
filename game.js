@@ -21,6 +21,9 @@ document.addEventListener('keyup', (event) =>{
     }
 });
 
+let scr = document.getElementById("score");
+scr.value = 0;
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -79,8 +82,15 @@ let nextBlock;
 // the block in holding... initially none
 let holdingBlock;
 
+// variables that decide falling speed
 let lastDropTime;
 let drop_delay;
+
+// variable that decide scoring
+let multiplier;
+
+// when the difficulty increases the falling speed and scoring multiplier increase as well
+let difficulty;
 
 function init(){
     isGameOver = false;
@@ -112,6 +122,8 @@ function init(){
     }
     lastDropTime = 0;
     drop_delay = 1000;
+    difficulty = 1;
+    multiplier = 1;
 }
 
 function drawGrid() {
@@ -203,7 +215,6 @@ function drawHoldBlock(){
 }
 
 function moveBlock(direction) {
-    let width = currentBlock.shape[0].length;
     let next = nextPosition(currentBlock,currentBlock.y,currentBlock.x + direction);
     if(next != null)
         currentBlock = next;
@@ -247,7 +258,7 @@ function isRotationValid(shape, x, y) {
 
 
 function rotateBlock() {
-    // the rotation center is not the same for each shape, i have to implement that as well...
+    // the rotation center is not the same for each shape, I have to implement that as well...
     let rotated = rotateMatrix(currentBlock.shape);
     if(isRotationValid(rotated,currentBlock.x,currentBlock.y)){
         currentBlock.shape = rotated;
@@ -373,13 +384,16 @@ function clearFullLines(){
     for(let i = 0;i < lines.length;i++){
         let index = lines[i];
         let rowOut = grid.splice(index,1)[0];
-        rowOut.forEach((obj, colIndex) => {
+        rowOut.forEach((obj) => {
             obj.isOccupied = 0;
             obj.color = null;
         });
         grid.reverse().push(rowOut);
         grid.reverse();
     }
+    let score = parseInt(scr.value);
+    score += lines.length;
+    scr.value = score;
 }
 
 function gravity(block) {
