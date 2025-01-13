@@ -22,7 +22,6 @@ document.addEventListener('keyup', (event) =>{
 });
 
 let scr = document.getElementById("score");
-scr.value = 0;
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -95,6 +94,7 @@ let difficulty;
 function init(){
     isGameOver = false;
     holdingBlock = null;
+    scr.value = 0;
     grid = Array.from({length: GAME_HEIGHT}, () =>
         Array.from(({length: GAME_WIDTH}),() =>({
             isOccupied : 0,
