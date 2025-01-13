@@ -92,6 +92,8 @@ let multiplier;
 let difficulty;
 
 function init(){
+    document.getElementById("GC").style.display = 'block';
+    document.getElementById("MN").style.display = 'none';
     isGameOver = false;
     holdingBlock = null;
     scr.value = 0;
@@ -452,5 +454,19 @@ function gameOver(){
     ctx.fillText("press R to restart",canvas.width / 2,(canvas.height / 2) + 20);
 }
 
-init();
-gameLoop();
+function startGame(){
+    init();
+    gameLoop();
+}
+
+function showInstructions(){
+    document.getElementById("IS").style.display = 'block';
+}
+
+function closeInstructions(){
+    document.getElementById("IS").style.display = 'none';
+}
+
+function exitGame(){
+    window.close();
+}

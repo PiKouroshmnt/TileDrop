@@ -1,7 +1,90 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: whitesmoke;
+    background-color: lightgray;
+}
+
+.instruction {
+    display: none;
+    width: 450px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.3);
+}
+
+.instruction h1{
+    color: #4CAF50;
+    font-size: 36px;
+}
+
+.instruction h2{
+    color: whitesmoke;
+    font-size: 20px;
+}
+
+.instruction button{
+    font-size: 20px;
+    transform: translate(-850%);
+    height: 25px;
+    padding: 0 4px;
+    margin: -20px;
+    background-color: dimgrey;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.instruction button:hover{
+    background-color: #45a049;
+}
+
+.insContainer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.menu {
+    width: 250px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.3);
+    z-index: -1;
+}
+.menu h1 {
+    color: whitesmoke;
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+.menu button {
+    width: 180px;
+    font-size: 20px;
+    padding: 15px 30px;
+    margin: 10px;
+    background-color: dimgrey;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.menu button:hover {
+    background-color: #45a049;
+}
+.menu button:focus {
+    outline: none;
 }
 
 canvas {
@@ -12,6 +95,7 @@ canvas {
 }
 
 .game-container {
+    display: none;
     text-align: center;
 }
 
