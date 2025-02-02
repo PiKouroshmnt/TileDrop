@@ -381,6 +381,20 @@ function numFullLines(){
     return fullLines;
 }
 
+// temporary... have to factor difficulty in as well
+function calculateScore(num){
+    // 1 line = 100 * multiplier(level) ---- 2 lines = 300 * multiplier ---- 3 lines = 500 * multiplier ---- 4 lines = 800 * multiplier
+    let score = multiplier;
+    if(num < 1){
+        score = 0;
+    }else if(num !== 4){
+        score *= ((2 * num - 1) * 100);
+    }else{
+        score *= 800;
+    }
+    return score;
+}
+
 function clearFullLines(){
     let lines = numFullLines();
     for(let i = 0;i < lines.length;i++){
@@ -394,7 +408,7 @@ function clearFullLines(){
         grid.reverse();
     }
     let score = parseInt(scr.value);
-    score += lines.length;
+    score += calculateScore(lines.length);
     scr.value = score;
 }
 
