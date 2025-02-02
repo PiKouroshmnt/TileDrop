@@ -395,6 +395,17 @@ function calculateScore(num){
     return score;
 }
 
+function increaseLevel(){
+    let threshold = 0;
+    for (let i = 0;i <= multiplier;i++){
+        threshold += (i * 2000);
+    }
+    let currentScore = parseInt(scr.value);
+    if(currentScore > threshold){
+        multiplier++;
+    }
+}
+
 function clearFullLines(){
     let lines = numFullLines();
     for(let i = 0;i < lines.length;i++){
@@ -410,6 +421,7 @@ function clearFullLines(){
     let score = parseInt(scr.value);
     score += calculateScore(lines.length);
     scr.value = score;
+    increaseLevel();
 }
 
 function gravity(block) {
