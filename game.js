@@ -22,6 +22,8 @@ document.addEventListener('keyup', (event) =>{
 });
 
 let scr = document.getElementById("score");
+let mult = document.getElementById("mult");
+let diff = document.getElementById("diff");
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -85,18 +87,14 @@ let holdingBlock;
 let lastDropTime;
 let drop_delay;
 
-// variable that decide scoring
-let multiplier;
-
-// when the difficulty increases the falling speed and scoring multiplier increase as well
-let difficulty;
-
 function init(){
     document.getElementById("GC").style.display = 'block';
     document.getElementById("MN").style.display = 'none';
     isGameOver = false;
     holdingBlock = null;
     scr.value = 0;
+    mult.value = 1;
+    diff.value = 1;
     grid = Array.from({length: GAME_HEIGHT}, () =>
         Array.from(({length: GAME_WIDTH}),() =>({
             isOccupied : 0,
@@ -124,8 +122,6 @@ function init(){
     }
     lastDropTime = 0;
     drop_delay = 1000;
-    difficulty = 1;
-    multiplier = 1;
 }
 
 function drawGrid() {
@@ -384,7 +380,7 @@ function numFullLines(){
 // temporary... have to factor difficulty in as well
 function calculateScore(num){
     // 1 line = 100 * multiplier(level) ---- 2 lines = 300 * multiplier ---- 3 lines = 500 * multiplier ---- 4 lines = 800 * multiplier
-    let score = multiplier;
+    let score = parseInt(mult.value);
     if(num < 1){
         score = 0;
     }else if(num !== 4){
@@ -397,6 +393,7 @@ function calculateScore(num){
 
 function increaseLevel(){
     let threshold = 0;
+    let multiplier = parseInt(mult.value);
     for (let i = 0;i <= multiplier;i++){
         threshold += (i * 2000);
     }
@@ -404,6 +401,7 @@ function increaseLevel(){
     if(currentScore > threshold){
         multiplier++;
     }
+    mult.value = multiplier;
 }
 
 function clearFullLines(){
@@ -493,6 +491,7 @@ function closeInstructions(){
     document.getElementById("IS").style.display = 'none';
 }
 
-function exitGame(){
-    window.close();
+function showCredits(){
+    // will implement this later
+    // this function will show a list of assets and people who helped me create this project
 }

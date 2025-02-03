@@ -16,20 +16,32 @@
         <h2>-Use up arrow key to rotate the blocks</h2>
         <h2>-Use down arrow key to speed up the block</h2>
         <h2>-Use 'C' to hold block in the hold box</h2>
+        <h2>-Use 'Space' to drop the block instantly</h2>
         <h1>Have Fun :)</h1>
     </div>
     <div id="MN" class="menu">
         <h1>TileDrop</h1>
         <div><button onclick="startGame()">Start Game</button></div>
         <div><button onclick="showInstructions()">Instructions</button></div>
-        <div><button onclick="exitGame()">Exit</button></div>
+        <div><button onclick="showCredits()">Credits</button></div>
     </div>
     <div id="GC" class="game-container">
         <div class="boxes">
-            <!-- Hold Box -->
-            <div class="box">
-                <div class="box-title">Hold</div>
-                <canvas id="holdCanvas" width="120" height="120"></canvas>
+            <div>
+                <!-- Hold Box -->
+                <div class="box">
+                    <div class="box-title">Hold</div>
+                    <canvas id="holdCanvas" width="120" height="120"></canvas>
+                </div>
+                <div class="info">
+                    <div class="info-text">Level : <output id="mult"></output></div>
+                    <div class="info-text">Difficulty: <output id="diff"></output></div>
+                    <div class="info-text">Use <img src="images/left_right_arrows.png" alt="image of left and right arrow keys" width="48" height="24"></img> to move</div>
+                    <div class="info-text">Use <img src="images/up_arrow.png" alt="image of up arrow key" width="24" height="24"> to rotate <br>
+                        hold <img src="images/down_key.png" alt="image of down arrow key" width="24" height="24"> to speed drop</div>
+                    <div class="info-text">Use <img src="images/C_key.png" alt="image of the C key on keyboard" width="24" height="24"> to hold</div>
+                    <div class="info-text">Use <img src="images/space_bar.png" alt="image of space key in keyboard" width="48" height="24"> to instant drop</div>
+                </div>
             </div>
             <!-- Game Canvas -->
             <div class="game-canvas">
