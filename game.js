@@ -165,6 +165,28 @@ function drawBlock(block) {
     });
 }
 
+function drawFinalBlock(){
+    let finalBlock = currentBlock;
+    for(let temp = finalBlock;temp != null;temp = nextPosition(temp,temp.y + 1,temp.x)){
+        finalBlock = temp;
+    }
+    finalBlock.shape.forEach((row,rowIndex) =>{
+        row.forEach((cell,colIndex) =>{
+            if(cell){
+                ctx.strokeStyle = finalBlock.color;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(
+                    (finalBlock.x + colIndex) * BLOCK_SIZE,
+                    (finalBlock.y + rowIndex) * BLOCK_SIZE,
+                    BLOCK_SIZE,
+                    BLOCK_SIZE
+                )
+                ctx.lineWidth = 1;
+            }
+        });
+    });
+}
+
 function drawNextBlock(){
     nextBlock.shape.forEach((row,rowIndex) => {
         row.forEach((cell,colIndex) => {
@@ -440,6 +462,7 @@ function gameLoop(currenTime){
     nxtCtx.clearRect(0,0,nxtCanvas.width,nxtCanvas.height);
     ctx.clearRect(0,0,canvas.width,canvas.height);
     drawGrid();
+    drawFinalBlock();
     drawBlock(currentBlock);
     drawNextBlock();
     drawHoldBlock();
