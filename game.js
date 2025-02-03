@@ -7,6 +7,8 @@ document.addEventListener('keydown', (event) => {
         rotateBlock();
     }else if(event.key === 'ArrowDown' && event.repeat){
         speedFall();
+    }else if(event.key === ' ' && isGameOver === false){
+        instantDrop();
     }else if(event.key === 'r' && isGameOver){
         init();
         gameLoop();
@@ -76,6 +78,9 @@ console.log(grid);
 
 // the current block we want to draw
 let currentBlock;
+
+// this will hold the current blocks final position
+let finalPos;
 
 // the block that will spawn next
 let nextBlock;
@@ -170,6 +175,7 @@ function drawFinalBlock(){
     for(let temp = finalBlock;temp != null;temp = nextPosition(temp,temp.y + 1,temp.x)){
         finalBlock = temp;
     }
+    finalPos = finalBlock;
     finalBlock.shape.forEach((row,rowIndex) =>{
         row.forEach((cell,colIndex) =>{
             if(cell){
@@ -341,6 +347,13 @@ function holdBlock(){
     holdingBlock.y = (HOLD_HEIGHT - height) / 2;
 }
 
+function instantDrop(){
+    currentBlock = finalPos;
+    placeBlockOnGrid();
+    spawnNewBlock();
+    clearFullLines();
+}
+
 function placeBlockOnGrid() {
     currentBlock.shape.forEach((blockRow, rowIndex) => {
         blockRow.forEach((cell, colIndex) => {
@@ -449,7 +462,6 @@ function gravity(block) {
     let next = nextPosition(block,block.y + 1,block.x);
     if(next != null){
         block.y++;
-        let multiplier = parseInt(mult.value);
     }else{
         placeBlockOnGrid();
         spawnNewBlock();
@@ -477,6 +489,9 @@ function gameOver(){
     isGameOver = true;
 
     cancelAnimationFrame(gameLoopId);
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    drawGrid();
     
     hldCtx.clearRect(0,0,hldCanvas.width,hldCanvas.height);
     nxtCtx.clearRect(0,0,nxtCanvas.width,nxtCanvas.height);
