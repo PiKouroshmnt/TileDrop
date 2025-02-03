@@ -103,6 +103,7 @@ function init(){
     );
     nxtCtx.clearRect(0,0,nxtCanvas.width,nxtCanvas.height);
     ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.lineWidth = 1;
     let firstIndex = randomIndex(SHAPES.length);
     let secondIndex = randomIndex(SHAPES.length);
     currentBlock = {
@@ -398,7 +399,7 @@ function increaseLevel(){
         threshold += (i * 2000);
     }
     let currentScore = parseInt(scr.value);
-    if(currentScore > threshold){
+    if(currentScore >= threshold){
         multiplier++;
     }
     mult.value = multiplier;
@@ -426,6 +427,7 @@ function gravity(block) {
     let next = nextPosition(block,block.y + 1,block.x);
     if(next != null){
         block.y++;
+        let multiplier = parseInt(mult.value);
     }else{
         placeBlockOnGrid();
         spawnNewBlock();
@@ -469,12 +471,16 @@ function gameOver(){
     hldCtx.fillRect(0,0,hldCanvas.width,hldCanvas.height);
     
     ctx.fillStyle = "rgb(255,0,0)";
-    ctx.font = "30px Arial";
+    ctx.font = "30px GamePausedDEMO";
     ctx.textAlign = "center";
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 4;
+    ctx.strokeText("Game over",canvas.width / 2,canvas.height / 2);
     ctx.fillText("Game over",canvas.width / 2,canvas.height / 2);
 
+    ctx.font = "15px GamePausedDEMO";
+    ctx.strokeText("press R to restart",canvas.width / 2,(canvas.height / 2) + 20);
     ctx.fillStyle = "#d3d3d3";
-    ctx.font = "15px Arial";
     ctx.fillText("press R to restart",canvas.width / 2,(canvas.height / 2) + 20);
 }
 

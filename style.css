@@ -1,5 +1,10 @@
+@font-face {
+    font-family: GamePausedDEMO;
+    src: url("font/Game Paused DEMO.otf");
+}
+
 body {
-    font-family: "Game Paused DEMO", sans-serif;
+    font-family: GamePausedDEMO, sans-serif;
     text-align: center;
     background-color: lightgray;
 }
@@ -71,7 +76,7 @@ body {
 .menu button {
     width: 180px;
     font-size: 20px;
-    font-family: "Game Paused DEMO",sans-serif;
+    font-family: GamePausedDEMO,sans-serif;
     padding: 15px 30px;
     margin: 10px;
     background-color: dimgrey;
