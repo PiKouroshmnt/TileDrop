@@ -1,18 +1,27 @@
 document.addEventListener('keydown', (event) => {
-    if(event.key === 'ArrowLeft'){
+    if(event.key === 'Escape' && started){
+        if(paused){
+            resumeGame();
+        }else{
+            pauseGame();
+        }
+    }else if(paused){
+        return;
+    }
+    if(event.key === 'ArrowLeft' && started){
         moveBlock(-1);
-    }else if(event.key === 'ArrowRight') {
+    }else if(event.key === 'ArrowRight' && started) {
         moveBlock(1);
-    }else if(event.key === 'ArrowUp') {
+    }else if(event.key === 'ArrowUp' && started) {
         rotateBlock();
     }else if(event.key === 'ArrowDown' && event.repeat){
         speedFall();
-    }else if(event.key === ' ' && isGameOver === false){
+    }else if(event.key === ' ' && isGameOver === false && started){
         instantDrop();
     }else if(event.key === 'r' && isGameOver){
         init();
         gameLoop();
-    }else if(event.key === 'c'){
+    }else if(event.key === 'c' && started){
         holdBlock();
     }
 });
@@ -71,6 +80,8 @@ const HOLD_HEIGHT = hldCanvas.height / BLOCK_SIZE;
 
 let isGameOver;
 let gameLoopId;
+let started;
+let paused;
 
 let grid;
 
@@ -96,6 +107,8 @@ function init(){
     document.getElementById("GC").style.display = 'block';
     document.getElementById("MN").style.display = 'none';
     isGameOver = false;
+    paused = false;
+    started = true;
     holdingBlock = null;
     scr.value = 0;
     mult.value = 1;
@@ -354,6 +367,26 @@ function instantDrop(){
     clearFullLines();
 }
 
+function pauseGame(){
+    paused = true;
+    cancelAnimationFrame(gameLoopId);
+    document.getElementById("PM").style.display = 'block';
+
+    ctx.fillStyle = "rgba(255,255,255,0.5)";
+    hldCtx.fillStyle = "rgba(255,255,255,0.5)";
+    nxtCtx.fillStyle = "rgba(255,255,255,0.5)";
+    
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    hldCtx.fillRect(0,0,hldCanvas.width,hldCanvas.height);
+    nxtCtx.fillRect(0,0,nxtCanvas.width,nxtCanvas.height);
+}
+
+function resumeGame(){
+    paused = false;
+    document.getElementById("PM").style.display = 'none';
+    gameLoop();
+}
+
 function placeBlockOnGrid() {
     currentBlock.shape.forEach((blockRow, rowIndex) => {
         blockRow.forEach((cell, colIndex) => {
@@ -487,7 +520,8 @@ function gameLoop(currenTime){
 
 function gameOver(){
     isGameOver = true;
-
+    started = false;
+    
     cancelAnimationFrame(gameLoopId);
 
     ctx.clearRect(0,0,canvas.width,canvas.height);
