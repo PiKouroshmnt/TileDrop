@@ -399,12 +399,13 @@ function placeBlockOnGrid() {
                 const x = currentBlock.x + colIndex;
                 const y = currentBlock.y + rowIndex;
                 if(y < 0)
-                    return;
+                    return true;
                 grid[y][x].isOccupied = 1;
                 grid[y][x].color = currentBlock.color;
             }
         });
     });
+    return false;
 }
 
 function nextPosition(block,newY,newX) {
@@ -421,11 +422,16 @@ function nextPosition(block,newY,newX) {
                 const x = nextBlock.x + colIndex;
                 const y = nextBlock.y + rowIndex;
                 
+                if(x >= GAME_WIDTH || x < 0){
+                    isnull = true;
+                    return;
+                }
+                
                 if(y < 0) {
                     return;
                 }
                 
-                if(y >= GAME_HEIGHT || x >= GAME_WIDTH || x < 0 || grid[y][x].isOccupied === 1){
+                if(y >= GAME_HEIGHT || grid[y][x].isOccupied === 1){
                     isnull = true;
                 }
             }
@@ -518,7 +524,11 @@ function gravity(block) {
     if(next != null){
         block.y++;
     }else{
-        placeBlockOnGrid();
+        let lost = placeBlockOnGrid();
+        if(lost) {
+            gameOver();
+            return;
+        }
         spawnNewBlock();
         clearFullLines();
     }
