@@ -61,7 +61,7 @@ const COLORS = [
     '#00ffff',
     '#0f02d2',
     '#ff4500',
-    '#f3f810',
+    '#FFFB00',
     '#21832f',
 ];
 
@@ -339,7 +339,12 @@ function speedFall(){
 }
 
 function normalFall(){
-    drop_delay = 1000;
+    let difficulty = parseInt(diff.value);
+    if(difficulty <= 5){
+        drop_delay = 1000 - ((difficulty - 1) * 150);
+    }else{
+        drop_delay = 400 - ((difficulty - 5) * 70);
+    }
 }
 
 function holdBlock(){
@@ -467,10 +472,26 @@ function increaseLevel(){
         threshold += (i * 2000);
     }
     let currentScore = parseInt(scr.value);
-    if(currentScore >= threshold){
+    while(currentScore >= threshold){
         multiplier++;
+        threshold += (multiplier * 2000);
     }
     mult.value = multiplier;
+}
+
+function increaseDifficulty(){
+    let difficulty = parseInt(diff.value);
+    if(difficulty === 10){
+        return;
+    }
+    let multiplier = parseInt(mult.value);
+    let threshold = difficulty * 3;
+    while(multiplier >= threshold){
+        difficulty++;
+        threshold += 3; 
+    }
+    diff.value = (difficulty > 10) ? 10 : difficulty;
+    normalFall();
 }
 
 function clearFullLines(){
@@ -489,6 +510,7 @@ function clearFullLines(){
     score += calculateScore(lines.length);
     scr.value = score;
     increaseLevel();
+    increaseDifficulty();
 }
 
 function gravity(block) {
